@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book Form | Library Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #243247;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            background: #334780;
+            padding: 10px 18px;
+            border-radius: 7px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-heading {
+            margin-bottom: 28px;
+        }
+
+        .form-heading h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #172554;
+        }
+
+        .form-heading p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .save-button,
+        .cancel-button {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 13px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .save-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #1d4ed8;
+        }
+
+        .cancel-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .cancel-button:hover {
+            background: #cbd5e1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 20px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .form-card {
+                padding: 24px 20px;
+            }
+
+            .form-heading h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 Library Management System</h1>
+    <a th:href="@{/books}">← Back to Books</a>
+</header>
+
+<main class="container">
+
+    <div class="form-card">
+
+        <div class="form-heading">
+            <h2 th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}">
+                Add New Book
+            </h2>
+
+            <p>Enter the book details below and save your changes.</p>
+        </div>
+
+        <form th:action="@{/books/save}"
+              th:object="${book}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text"
+                       id="title"
+                       th:field="*{title}"
+                       placeholder="Enter book title"
+                       required
+                       maxlength="200">
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author Name</label>
+                <input type="text"
+                       id="author"
+                       th:field="*{author}"
+                       placeholder="Enter author name"
+                       required
+                       maxlength="150">
+            </div>
+
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text"
+                       id="isbn"
+                       th:field="*{isbn}"
+                       placeholder="Enter ISBN"
+                       required
+                       maxlength="20">
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price (₹)</label>
+                <input type="number"
+                       id="price"
+                       th:field="*{price}"
+                       placeholder="Enter book price"
+                       min="0"
+                       step="0.01"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number"
+                       id="quantity"
+                       th:field="*{quantity}"
+                       placeholder="Enter available quantity"
+                       min="0"
+                       step="1"
+                       required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="save-button">
+                    Save Book
+                </button>
+
+                <a th:href="@{/books}" class="cancel-button">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+<footer>
+    Library Management System | Java • Spring Boot • Thymeleaf • MySQL
+</footer>
+
+</body>
+</html>

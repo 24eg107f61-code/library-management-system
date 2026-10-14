@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Issue a Book | Library Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #243247;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            background: #334780;
+            padding: 10px 18px;
+            border-radius: 7px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-heading {
+            margin-bottom: 28px;
+        }
+
+        .form-heading h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #172554;
+        }
+
+        .form-heading p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .message {
+            padding: 14px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .help-text {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .submit-button,
+        .cancel-button {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 13px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+        }
+
+        .cancel-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .cancel-button:hover {
+            background: #cbd5e1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 20px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .form-card {
+                padding: 24px 20px;
+            }
+
+            .form-heading h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 Library Management System</h1>
+    <a th:href="@{/issues}">← Back to Issues</a>
+</header>
+
+<main class="container">
+
+    <div class="form-card">
+
+        <div class="form-heading">
+            <h2>Issue a Book</h2>
+            <p>Select a student, choose an available book, and set the expected return date.</p>
+        </div>
+
+        <div th:if="${successMessage}"
+             class="message success"
+             th:text="${successMessage}">
+        </div>
+
+        <div th:if="${errorMessage}"
+             class="message error"
+             th:text="${errorMessage}">
+        </div>
+
+        <form th:action="@{/issues/save}"
+              th:object="${issue}"
+              method="post">
+
+            <div class="form-group">
+                <label for="bookId">Select Book</label>
+
+                <select id="bookId" th:field="*{bookId}" required>
+                    <option value="">-- Choose a book --</option>
+
+                    <option th:each="book : ${books}"
+                            th:value="${book.id}"
+                            th:text="${book.title + (book.quantity > 0 ? ' (Available: ' + book.quantity + ')' : ' (OUT OF STOCK)')}"
+                            th:disabled="${book.quantity <= 0}">
+                    </option>
+                </select>
+
+                <span class="help-text">
+                    Books with no available copies cannot be selected.
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label for="studentId">Select Student</label>
+
+                <select id="studentId" th:field="*{studentId}" required>
+                    <option value="">-- Choose a student --</option>
+
+                    <option th:each="student : ${students}"
+                            th:value="${student.id}"
+                            th:text="${student.name + ' (' + student.department + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="returnDate">Expected Return Date</label>
+
+                <input type="date"
+                       id="returnDate"
+                       th:field="*{returnDate}"
+                       th:attr="min=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                       required>
+
+                <span class="help-text">
+                    Select today or a future date.
+                </span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-button">
+                    Issue Book
+                </button>
+
+                <a th:href="@{/issues}" class="cancel-button">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+<footer>
+    Library Management System | Java • Spring Boot • Thymeleaf • MySQL
+</footer>
+
+</body>
+</html>
